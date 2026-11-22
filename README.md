@@ -30,12 +30,19 @@ Copy-Item .env.example .env
 
 ```powershell
 php artisan key:generate
-php artisan migrate
+php artisan migrate --seed
+php artisan nadeen:buat-admin
 npm.cmd run build
 php artisan serve
 ```
 
-Buka [halaman aplikasi lokal](http://127.0.0.1:8000). Halaman awal memakai sesi database, sehingga pembukaan halaman memeriksa alur dari browser sampai MySQL. Untuk memeriksa status proses Laravel dalam format JSON, jalankan `curl.exe -H "Accept: application/json" http://127.0.0.1:8000/up`.
+Buka [halaman aplikasi lokal](http://127.0.0.1:8000) dan masuk dengan akun admin yang baru dibuat. Perintah `nadeen:buat-admin` meminta nama lengkap, nama pengguna, dan kata sandi minimal 10 karakter. Buat akun staf dari menu **Akun** dan pilih peran **Produksi & Gudang**.
+
+Untuk workspace yang sudah menjalankan T01, mulai dari `php artisan migrate --seed`. Seeder mengisi delapan kategori kas awal dan mempertahankan perubahan pada kategori yang sudah ada.
+
+Admin bisa mencari, menambah, mengubah, dan menonaktifkan pelanggan, supplier, produk, standar HPP, serta kategori kas. Produksi dan gudang bisa membaca produk dan supplier aktif dengan kolom operasional. Standar HPP dibedakan berdasarkan produk dan tanggal mulai berlaku.
+
+Untuk memeriksa status proses Laravel dalam format JSON, jalankan `curl.exe -H "Accept: application/json" http://127.0.0.1:8000/up`.
 
 Saat mengubah CSS, jalankan `npm.cmd run dev` di terminal kedua agar Vite memuat perubahan. Pengguna macOS atau Linux dapat memakai `npm` sebagai ganti `npm.cmd` dan `cp` sebagai ganti `Copy-Item`.
 
@@ -51,7 +58,7 @@ php vendor/bin/pint --test
 php artisan test
 ```
 
-Suite T01 memeriksa halaman awal, aset build, health check, tabel sesi dan cache, serta koneksi ke `sim_nadeen_test`. Migrasi pengujian memakai database `sim_nadeen_test`.
+Suite memeriksa halaman masuk, aset build, koneksi MySQL, login kedua peran, pembatasan akses, manajemen akun, dan validasi master. Migrasi dan transaksi pengujian memakai database `sim_nadeen_test`.
 
 ### Berbagi dan berkontribusi
 
@@ -61,7 +68,7 @@ Gunakan branch per pekerjaan. Sebelum mengajukan perubahan, jalankan pemeriksaan
 
 ## Status proyek
 
-Tahap **T00 Rancangan** dan **T01 Fondasi lokal** selesai. Tahap berikutnya adalah **T02 Akun, master, dan layout**.
+Tahap **T00 Rancangan** sampai **T02 Akun, master, dan layout** selesai. Tahap berikutnya adalah **T03 Inventori dan lot awal**.
 
 ## Pelacak tahapan
 
@@ -71,7 +78,7 @@ Ubah status menjadi **Selesai** setelah syarat di rancangan terpenuhi. Isi tangg
 | --- | --- | --- | --- |
 | Selesai | T00 Rancangan | Rancangan teknis, pemetaan laporan, arah Anti Slop, dan pelacak tersedia | [Rancangan](docs/RANCANGAN-IMPLEMENTASI.md) · 22 November 2026 |
 | Selesai | T01 Fondasi lokal | Laravel berjalan, build aset dan migrasi MySQL lokal berhasil | [Bukti verifikasi](#catatan-verifikasi) · 22 November 2026 |
-| Direncanakan | T02 Akun, master, dan layout | Login, peran, master, kategori, dan layout berjalan | |
+| Selesai | T02 Akun, master, dan layout | Login dua peran, pengelolaan akun dan master, kategori kas awal, serta layout responsif teruji | [Bukti verifikasi](#catatan-verifikasi) · 23 November 2026 |
 | Direncanakan | T03 Inventori dan lot awal | Lot, saldo, kondisi, riwayat mutasi, dan peringatan stok teruji | |
 | Direncanakan | T04 Pesanan dan estimasi | Draf, HPP, konfirmasi, potong stok, dan nota teruji | |
 | Direncanakan | T05 Pembelian, bayar, dan buku kas | Pembelian, DP, pelunasan, posting, pembalik, dan saldo teruji | |
@@ -116,8 +123,17 @@ Ubah status menjadi **Terverifikasi** setelah versi terpasang dan fungsi terkait
 | 22 November 2026 | T00 | Tinjau laporan, tabel, diagram, dan kontras palet rancangan | [Rancangan implementasi](docs/RANCANGAN-IMPLEMENTASI.md) |
 | 22 November 2026 | T01 | Instalasi dari lockfile, pemeriksaan platform, Pint, dan build | Lulus `composer validate --strict`, `composer install`, `composer check-platform-reqs`, `npm ci`, `npm run build`, dan `php vendor/bin/pint --test` |
 | 22 November 2026 | T01 | MySQL lokal dan HTTP | Migrasi awal pada `sim_nadeen` dan `sim_nadeen_test` berhasil di instans MySQL terisolasi. Kedua rute HTTP merespons 200. PHPUnit lulus 2 tes dan 14 asersi |
+| 23 November 2026 | T02 | Build, migrasi, dan uji akses serta master | Build dan Pint lulus. PHPUnit lulus 9 tes dan 121 asersi pada MySQL terisolasi. Migrasi diterapkan ke kedua database lokal dan delapan kategori awal diisi pada database pengembangan |
+| 23 November 2026 | T02 | Uji antarmuka Chrome | Login kedua peran, logout, respons 403, keyboard, input master, perubahan status, filter, dan paginasi diuji. Halaman masuk dan daftar produk diperiksa pada lebar 320, 375, 768, 1024, dan 1440 px |
 
-### Pemeriksaan Anti Slop pada halaman awal
+### Pemeriksaan Anti Slop T02
+
+- **Hard Gate lulus.** Lima lebar layar lulus tanpa overflow horizontal. Chrome menampilkan fokus keyboard, pesan login gagal, keadaan kosong, dan halaman akses dibatasi. Galat konsol yang tidak diharapkan nihil.
+- **Purpose Gate lulus.** Hijau tua menandai navigasi dan tindakan utama. Nada kertas dan garis mendatar membantu memindai daftar. Rasio kontras pasangan teks utama yang diperiksa berada pada 7,33:1 atau lebih.
+- **Liveliness lulus.** Wordmark Georgia menonjol di halaman masuk. Di area kerja, judul dan daftar menjadi fokus. Sidebar desktop menjaga tombol **Keluar** tetap terlihat dan tautan navigasi ponsel tampil di atas konten.
+- **Craftsmanship lulus.** Kedua peran diuji di Chrome dan lewat HTTP. Tabel beralih ke pasangan label dan nilai di layar sempit. Tombol simpan, batal, ubah, cari, hapus filter, dan navigasi halaman menjalankan fungsi yang tertera.
+
+### Pemeriksaan Anti Slop T01
 
 - **Hard Gate lulus.** Chrome memuat halaman dan CSS pada lebar 320, 375, 768, 1024, dan 1440 px tanpa overflow horizontal atau galat konsol. Judul dan landmark utama tersedia dengan `lang="id"`.
 - **Purpose Gate lulus.** Warna kertas menjadi latar, satu garis memisahkan judul dan status, serta hijau tua menandai fondasi berjalan dengan rasio kontras 7,95:1.
