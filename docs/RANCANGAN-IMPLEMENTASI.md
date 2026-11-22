@@ -2,7 +2,7 @@
 
 Rilis pertama adalah aplikasi web internal untuk mencatat pesanan furniture, menghitung harga pokok penjualan (HPP), mengelola pembayaran dan kas, memantau persediaan, serta menyajikan laporan untuk pemilik. Aplikasi dan MySQL berjalan pada satu komputer Windows. Untuk pengembangan, akses awal melalui browser pada komputer tersebut. Jika beberapa staf perlu membuka aplikasi dari perangkat lain, web server melayani jaringan kantor melalui HTTPS dan MySQL tetap mendengarkan di loopback.
 
-Acuan bisnisnya adalah Bab 1 sampai Bab 7, Tabel 1 sampai 5, dan Gambar 1 sampai 6 dalam [Laporan Tahap Perancangan UMKM Furniture Nadeen](../Laporan%20Tahap%20Perancangan%20-%20UMKM%20Furniture%20Nadeen.docx). Status pengerjaan dicatat di [README proyek](../README.md).
+Acuan bisnisnya adalah Bab 1 sampai Bab 7, Tabel 1 sampai 5, dan Gambar 1 sampai 6 dalam [Laporan Tahap Perancangan UMKM Furniture Nadeen](Laporan%20Tahap%20Perancangan%20-%20UMKM%20Furniture%20Nadeen.docx). Status pengerjaan dicatat di [README proyek](../README.md).
 
 ## Cakupan dan keterlacakan
 
@@ -73,8 +73,8 @@ flowchart LR
 
 ### MySQL lokal dan konfigurasi
 
-- Siapkan `sim_nadeen` untuk pengembangan dan `sim_nadeen_test` untuk pengujian, masing-masing dengan kredensial sendiri. Gunakan akun per lingkungan pada `127.0.0.1:3306`. Pada operasional, berikan hak DML kepada akun aplikasi dan gunakan akun migrasi terpisah untuk DDL.
-- Isi `DB_CONNECTION=mysql`, `DB_HOST=127.0.0.1`, `DB_PORT=3306`, `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD` melalui `.env`. Simpan nama variabel dan nilai contoh aman di `.env.example`. Hasilkan `APP_KEY` per lingkungan. Sesi dan cache menggunakan tabel Laravel. Antrean menggunakan mode sinkron.
+- Siapkan `sim_nadeen` untuk pengembangan dan `sim_nadeen_test` untuk pengujian. Keduanya memakai akun `root` dengan password kosong pada MySQL lokal di `127.0.0.1:3306`.
+- Salin konfigurasi dari `.env.example` dan `.env.testing.example` untuk setiap lingkungan. Hasilkan `APP_KEY` per lingkungan. Sesi dan cache pengembangan menggunakan tabel Laravel. Antrean menggunakan mode sinkron.
 - Gunakan tanggal bisnis `DATE` dalam zona Asia/Jakarta. Simpan waktu kejadian `DATETIME` dalam UTC dan tampilkan dalam WIB. Tanggal efektif transaksi baru mengikuti hari pencatatan WIB. Impor historis menyertakan tanggal efektif yang telah diverifikasi dan waktu impor yang tercatat sendiri.
 - Gunakan kunci asing dengan pembatasan hapus untuk data historis, mode SQL ketat, serta indeks untuk rute pencarian dan agregasi utama. Uji integrasi memakai MySQL agar perilaku tipe desimal, indeks, dan penguncian sesuai lingkungan operasional. [Database Laravel](https://laravel.com/docs/13.x/database) · [MySQL InnoDB](https://dev.mysql.com/doc/refman/8.4/en/innodb-transaction-model.html) · [Aritmetika presisi MySQL](https://dev.mysql.com/doc/refman/8.4/en/precision-math.html)
 

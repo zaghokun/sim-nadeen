@@ -2,11 +2,66 @@
 
 Aplikasi web internal untuk pesanan furniture, estimasi HPP, pembayaran, buku kas, inventori, dan laporan pemilik. Stack yang dipilih adalah Laravel 13, PHP 8.4, Blade, Vite, dan MySQL 8.4 LTS lokal.
 
-[Rancangan implementasi](docs/RANCANGAN-IMPLEMENTASI.md) · [Laporan perancangan sumber](Laporan%20Tahap%20Perancangan%20-%20UMKM%20Furniture%20Nadeen.docx)
+[Rancangan implementasi](docs/RANCANGAN-IMPLEMENTASI.md) · [Laporan perancangan sumber](docs/Laporan%20Tahap%20Perancangan%20-%20UMKM%20Furniture%20Nadeen.docx)
+
+## Menjalankan proyek
+
+Siapkan **PHP 8.4**, **Composer 2**, **Node.js 24** dengan **npm 11**, dan **MySQL Community Server 8.4**. Di Windows, gunakan PowerShell dari folder proyek. Jika memakai Laragon, pastikan terminal memilih versi PHP dan MySQL tersebut. Aktifkan `pdo_mysql` dan `bcmath` pada PHP CLI. `composer check-platform-reqs` memeriksa semua ekstensi yang dibutuhkan.
+
+### Siapkan MySQL lokal
+
+Jalankan MySQL lokal dengan akun `root` dan password kosong. Masuk melalui klien SQL atau jalankan `mysql --host=127.0.0.1 --user=root`, lalu buat kedua database. Jika port MySQL berbeda, gunakan port yang sama pada klien dan konfigurasi Laravel.
+
+```sql
+CREATE DATABASE IF NOT EXISTS sim_nadeen CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+CREATE DATABASE IF NOT EXISTS sim_nadeen_test CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+```
+
+### Pasang dependensi dan buka aplikasi
+
+```powershell
+composer install
+composer check-platform-reqs
+npm.cmd ci
+Copy-Item .env.example .env
+```
+
+`.env.example` sudah berisi `DB_USERNAME=root` dan `DB_PASSWORD=`. Jika sudah punya `.env`, ubah kedua nilai tersebut di file yang ada. Sesuaikan `DB_PORT` jika MySQL memakai port lain.
+
+```powershell
+php artisan key:generate
+php artisan migrate
+npm.cmd run build
+php artisan serve
+```
+
+Buka [halaman aplikasi lokal](http://127.0.0.1:8000). Halaman awal memakai sesi database, sehingga pembukaan halaman memeriksa alur dari browser sampai MySQL. Untuk memeriksa status proses Laravel dalam format JSON, jalankan `curl.exe -H "Accept: application/json" http://127.0.0.1:8000/up`.
+
+Saat mengubah CSS, jalankan `npm.cmd run dev` di terminal kedua agar Vite memuat perubahan. Pengguna macOS atau Linux dapat memakai `npm` sebagai ganti `npm.cmd` dan `cp` sebagai ganti `Copy-Item`.
+
+### Jalankan pengujian
+
+Salin `.env.testing.example` ke `.env.testing`, atau sesuaikan file pengujian yang sudah ada agar memakai `DB_USERNAME=root`, `DB_PASSWORD=`, dan `DB_DATABASE=sim_nadeen_test`. Jalankan perintah ini dari terminal baru.
+
+```powershell
+php artisan key:generate --env=testing
+php artisan migrate --env=testing
+npm.cmd run build
+php vendor/bin/pint --test
+php artisan test
+```
+
+Suite T01 memeriksa halaman awal, aset build, health check, tabel sesi dan cache, serta koneksi ke `sim_nadeen_test`. Migrasi pengujian memakai database `sim_nadeen_test`.
+
+### Berbagi dan berkontribusi
+
+Bagikan akses ke repositori privat atau salinan kode dari riwayat Git. Sertakan `composer.lock`, `package-lock.json`, dan dua file contoh lingkungan. Setiap anggota menyiapkan `.env`, `.env.testing`, kunci aplikasi, dan MySQL di komputernya. Dependensi lokal, file lingkungan aktual, dan hasil build sudah masuk `.gitignore`.
+
+Gunakan branch per pekerjaan. Sebelum mengajukan perubahan, jalankan pemeriksaan format, build, dan pengujian di atas. Perbarui pelacak saat satu tahap lulus. Jika perubahan menyentuh struktur database, sertakan migrasinya agar anggota lain bisa menjalankan `php artisan migrate`.
 
 ## Status proyek
 
-Tahap **T00 Rancangan** selesai pada 22 November 2026. Tahap **T01 Fondasi lokal** adalah tahap implementasi pertama. Seluruh package di bawah masih berstatus **Direncanakan**, karena instalasi untuk proyek dimulai pada fase implementasi.
+Tahap **T00 Rancangan** dan **T01 Fondasi lokal** selesai. Tahap berikutnya adalah **T02 Akun, master, dan layout**.
 
 ## Pelacak tahapan
 
@@ -15,7 +70,7 @@ Ubah status menjadi **Selesai** setelah syarat di rancangan terpenuhi. Isi tangg
 | Status | Tahap | Capaian yang diperiksa | Bukti atau tanggal |
 | --- | --- | --- | --- |
 | Selesai | T00 Rancangan | Rancangan teknis, pemetaan laporan, arah Anti Slop, dan pelacak tersedia | [Rancangan](docs/RANCANGAN-IMPLEMENTASI.md) · 22 November 2026 |
-| Direncanakan | T01 Fondasi lokal | Laravel berjalan, build aset dan migrasi MySQL lokal berhasil | |
+| Selesai | T01 Fondasi lokal | Laravel berjalan, build aset dan migrasi MySQL lokal berhasil | [Bukti verifikasi](#catatan-verifikasi) · 22 November 2026 |
 | Direncanakan | T02 Akun, master, dan layout | Login, peran, master, kategori, dan layout berjalan | |
 | Direncanakan | T03 Inventori dan lot awal | Lot, saldo, kondisi, riwayat mutasi, dan peringatan stok teruji | |
 | Direncanakan | T04 Pesanan dan estimasi | Draf, HPP, konfirmasi, potong stok, dan nota teruji | |
@@ -31,17 +86,18 @@ Ubah status menjadi **Terverifikasi** setelah versi terpasang dan fungsi terkait
 
 | Package atau alat | Tahap | Status | Versi terpasang | Bukti verifikasi |
 | --- | --- | --- | --- | --- |
-| PHP 8.4 dan Composer 2 | T01 | Direncanakan | | `php -v`, `composer --version` |
-| MySQL Server 8.4 LTS dan CLI | T01 | Direncanakan | | Versi server, koneksi, dan migrasi |
-| Node.js 24 LTS dan npm | T01 | Direncanakan | | `node -v`, `npm -v` |
-| `laravel/laravel` | T01 | Direncanakan | | Versi scaffold dan halaman awal |
-| `laravel/framework` | T01 | Direncanakan | | `php artisan --version` dan uji HTTP |
-| `ext-pdo_mysql` | T01 | Direncanakan | | `composer check-platform-reqs` dan koneksi MySQL |
-| `ext-bcmath` | T01 | Direncanakan | | `composer check-platform-reqs` dan uji operasi desimal |
-| `vite` | T01 | Direncanakan | | `npm run build` |
-| `laravel-vite-plugin` | T01 | Direncanakan | | Halaman Blade memuat aset hasil build |
-| `laravel/pint` | T01 | Direncanakan | | `php vendor/bin/pint --test` |
-| `phpunit/phpunit` | T01 | Direncanakan | | `php artisan test` |
+| PHP 8.4 dan Composer 2 | T01 | Terverifikasi | 8.4.12 / 2.9.4 | `php -v`, `composer --version` |
+| MySQL Server 8.4 LTS dan CLI | T01 | Terverifikasi | 8.4.3 | Koneksi TCP localhost dan migrasi pada dua database |
+| Node.js 24 LTS dan npm | T01 | Terverifikasi | 24.19.0 / 11.17.0 | `node -v`, `npm -v`, dan `npm ci` |
+| `laravel/laravel` | T01 | Terverifikasi | 13.0.0 | Scaffold yang dipakai untuk inisialisasi |
+| `laravel/framework` | T01 | Terverifikasi | 13.43.0 | `php artisan --version` dan uji HTTP |
+| `ext-pdo_mysql` | T01 | Terverifikasi | 8.4.12 | `composer check-platform-reqs` dan koneksi MySQL |
+| `ext-bcmath` | T01 | Terverifikasi | 8.4.12 | `composer check-platform-reqs` dan uji operasi desimal |
+| `vite` | T01 | Terverifikasi | 8.3.8 | `npm run build` |
+| `laravel-vite-plugin` | T01 | Terverifikasi | 3.2.1 | Halaman Blade memuat aset hasil build |
+| `laravel/pint` | T01 | Terverifikasi | 1.32.3 | `php vendor/bin/pint --test` |
+| `phpunit/phpunit` | T01 | Terverifikasi | 12.5.45 | `php artisan test` |
+| `nunomaduro/collision` | T01 | Terverifikasi | 8.9.6 | Integrasi dan keluaran pengujian Artisan |
 | `phpoffice/phpspreadsheet` | T08 | Direncanakan | | Impor `dry-run` atas fixture Excel |
 | Apache HTTP Server 2.4 | T09 | Direncanakan | | `httpd -t`, akses HTTPS, dan login dari host pilot |
 
@@ -58,3 +114,12 @@ Ubah status menjadi **Terverifikasi** setelah versi terpasang dan fungsi terkait
 | Tanggal | Tahap | Perubahan atau pemeriksaan | Hasil dan bukti |
 | --- | --- | --- | --- |
 | 22 November 2026 | T00 | Tinjau laporan, tabel, diagram, dan kontras palet rancangan | [Rancangan implementasi](docs/RANCANGAN-IMPLEMENTASI.md) |
+| 22 November 2026 | T01 | Instalasi dari lockfile, pemeriksaan platform, Pint, dan build | Lulus `composer validate --strict`, `composer install`, `composer check-platform-reqs`, `npm ci`, `npm run build`, dan `php vendor/bin/pint --test` |
+| 22 November 2026 | T01 | MySQL lokal dan HTTP | Migrasi awal pada `sim_nadeen` dan `sim_nadeen_test` berhasil di instans MySQL terisolasi. Kedua rute HTTP merespons 200. PHPUnit lulus 2 tes dan 14 asersi |
+
+### Pemeriksaan Anti Slop pada halaman awal
+
+- **Hard Gate lulus.** Chrome memuat halaman dan CSS pada lebar 320, 375, 768, 1024, dan 1440 px tanpa overflow horizontal atau galat konsol. Judul dan landmark utama tersedia dengan `lang="id"`.
+- **Purpose Gate lulus.** Warna kertas menjadi latar, satu garis memisahkan judul dan status, serta hijau tua menandai fondasi berjalan dengan rasio kontras 7,95:1.
+- **Liveliness lulus.** Judul aplikasi menjadi fokus tunggal, dengan jarak responsif dan garis buku kerja dari rancangan.
+- **Craftsmanship lulus.** Halaman menampilkan status dari aplikasi yang berhasil merender Blade dan memakai sesi MySQL. Health check JSON memverifikasi proses Laravel.

@@ -1,0 +1,33 @@
+:root {
+    color-scheme: light;
+    color: #24241f;
+    background: #f6f3ed;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    line-height: 1.5;
+}
+
+body {
+    margin: 0;
+}
+
+.project-status {
+    max-width: 48rem;
+    margin-inline: auto;
+    padding: clamp(2rem, 8vw, 6rem) clamp(1rem, 4vw, 2rem);
+}
+
+.project-status h1 {
+    margin: 0;
+    padding-block-end: 1rem;
+    border-block-end: 1px solid #797a70;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 650;
+    line-height: 1.15;
+}
+
+.project-status p {
+    max-width: 42ch;
+    margin-block: 1rem 0;
+    color: #285246;
+    font-weight: 600;
+}
