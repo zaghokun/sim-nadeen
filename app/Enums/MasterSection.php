@@ -5,8 +5,10 @@ namespace App\Enums;
 use App\Models\CashCategory;
 use App\Models\CostStandard;
 use App\Models\Customer;
+use App\Models\Material;
 use App\Models\Product;
 use App\Models\Supplier;
+use App\Support\Decimal;
 use Illuminate\Validation\Rule;
 
 enum MasterSection: string
@@ -16,6 +18,7 @@ enum MasterSection: string
     case Supplier = 'supplier';
     case Cost = 'hpp';
     case Category = 'kategori-kas';
+    case Material = 'bahan';
 
     public function label(): string
     {
@@ -25,6 +28,7 @@ enum MasterSection: string
             self::Supplier => 'Supplier',
             self::Cost => 'Standar HPP',
             self::Category => 'Kategori Kas',
+            self::Material => 'Bahan Baku',
         };
     }
 
@@ -36,6 +40,7 @@ enum MasterSection: string
             self::Supplier => Supplier::class,
             self::Cost => CostStandard::class,
             self::Category => CashCategory::class,
+            self::Material => Material::class,
         };
     }
 
@@ -55,6 +60,7 @@ enum MasterSection: string
                 ...($admin ? ['harga_standar' => 'Harga standar'] : []),
             ],
             self::Customer => ['nama' => 'Nama pelanggan', 'kontak' => 'Kontak', 'wilayah' => 'Wilayah'],
+            self::Material => ['kode' => 'Kode bahan', 'nama' => 'Nama bahan', 'kategori' => 'Kategori', 'satuan' => 'Satuan', 'stok_minimum' => 'Stok minimum'],
             self::Supplier => [
                 'nama' => 'Nama supplier',
                 'jenis_bahan' => 'Jenis bahan',
@@ -103,6 +109,13 @@ enum MasterSection: string
                 'kontak' => $contact,
                 'wilayah' => ['label' => 'Wilayah', 'rules' => ['nullable', 'string', 'max:100']],
                 'alamat' => $address,
+            ],
+            self::Material => [
+                'kode' => [...$code, 'label' => 'Kode bahan'],
+                'nama' => [...$name, 'label' => 'Nama bahan'],
+                'kategori' => ['label' => 'Kategori bahan', 'rules' => ['required', 'string', 'max:100']],
+                'satuan' => ['label' => 'Satuan dasar', 'rules' => ['required', 'string', 'max:20']],
+                'stok_minimum' => ['label' => 'Stok minimum', 'type' => 'decimal', 'rules' => ['required', 'string', Decimal::QUANTITY]],
             ],
             self::Supplier => [
                 'nama' => [...$name, 'label' => 'Nama supplier'],

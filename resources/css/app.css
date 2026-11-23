@@ -25,6 +25,7 @@ h1, h2 { line-height: 1.15; }
 a { color: var(--accent); }
 button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
+[hidden] { display: none !important; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .muted { color: var(--muted); }
 
@@ -228,6 +229,62 @@ button { cursor: pointer; }
 .field-wide { grid-column: 1 / -1; }
 .form-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-block-start: 1.2rem; padding-block-start: 1rem; border-block-start: 1px solid var(--line); }
 .simple-page { display: grid; justify-items: start; gap: 1rem; max-inline-size: 54rem; padding: 2rem; margin-inline: auto; }
+
+.sidebar-nav summary {
+    min-block-size: 44px;
+    padding: 0.6rem 0.65rem;
+    cursor: pointer;
+}
+
+.sidebar-nav summary:hover { background: #32564a; }
+.sidebar-subnav { display: grid; gap: 0.2rem; padding-inline-start: 0.65rem; }
+.button-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.65rem; }
+.back-link { display: inline-flex; min-block-size: 44px; align-items: center; text-underline-offset: 0.2em; }
+.section-links { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin-block-start: 0.85rem; }
+.section-links a { display: inline-flex; min-block-size: 44px; align-items: center; padding-inline: 0.35rem; text-underline-offset: 0.25em; }
+.section-links a[aria-current="page"] { border-block-end: 2px solid var(--accent); color: var(--ink); font-weight: 700; text-decoration: none; }
+.operation-section { margin-block-start: 1.6rem; }
+.operation-section > h2 { margin-block-end: 0.7rem; }
+.operation-section > p + .table-wrap { margin-block-start: 0.7rem; }
+.operation-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); gap: 0.85rem; margin-block: 1rem; }
+.operation-summary div { padding: 0.75rem; border-block-start: 1px solid var(--line); }
+.operation-summary dt { color: var(--muted); font-size: 0.9rem; }
+.operation-summary dd { margin-inline-start: 0; font-size: 1.05rem; font-variant-numeric: tabular-nums; font-weight: 650; overflow-wrap: anywhere; }
+.compact-summary { margin-block: 0.75rem; }
+.compact-summary div { padding-inline: 0; }
+.line-panel, .order-line { min-inline-size: 0; margin-block: 0.85rem; padding: clamp(0.8rem, 2vw, 1.35rem); border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+.line-panel h3 { margin: 0; font-size: 1.1rem; overflow-wrap: anywhere; }
+.line-panel h2 { font-size: 1.1rem; overflow-wrap: anywhere; }
+.section-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.65rem; }
+.wide-editor { max-inline-size: 66rem; }
+.order-line legend { padding-inline: 0.35rem; font-weight: 650; }
+.estimate-line, .order-estimate-total { margin-block: 0.75rem; padding: 0.65rem; background: var(--success); color: var(--accent); overflow-wrap: anywhere; }
+.notice-error { background: #fae8e5; color: var(--danger); }
+.notice-error ul { margin-block: 0.35rem 0; padding-inline-start: 1.35rem; }
+.notice-inline { margin-block-start: 0.5rem; color: #75411d; font-weight: 650; }
+.transaction-list { list-style: none; margin: 0.65rem 0; padding: 0; }
+.transaction-list li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.25rem 1rem; padding: 0.5rem 0; border-block-end: 1px solid var(--line); }
+meter { inline-size: 100%; block-size: 1.1rem; margin-block: 0.4rem; accent-color: var(--accent); }
+.print-document { max-inline-size: 54rem; margin-inline: auto; padding: clamp(1rem, 4vw, 2.5rem); background: var(--panel); }
+.print-controls { margin-block-end: 1rem; }
+
+@media (max-width: 62rem) {
+    .sidebar-nav details { min-inline-size: 7.5rem; }
+    .sidebar-subnav { grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); padding-inline-start: 0; }
+    .sidebar-nav details[open] { flex: 1 0 100%; }
+}
+
+@media print {
+    body, :root { background: #fff; color: #000; }
+    .print-controls { display: none; }
+    .print-document { max-inline-size: none; padding: 0; }
+    .print-document .ledger { display: table; }
+    .print-document .ledger thead { display: table-header-group; position: static; inline-size: auto; block-size: auto; clip-path: none; white-space: normal; }
+    .print-document .ledger tbody { display: table-row-group; }
+    .print-document .ledger tr { display: table-row; break-inside: avoid; }
+    .print-document .ledger td { display: table-cell; padding: 0.5rem; border-bottom: 1px solid #aaa; }
+    .print-document .cell-label { display: none; }
+}
 
 @media (max-width: 62rem) {
     .app-shell { grid-template-columns: minmax(0, 1fr); }

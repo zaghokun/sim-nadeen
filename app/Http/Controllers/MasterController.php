@@ -47,7 +47,7 @@ class MasterController extends Controller
                 match ($section) {
                     MasterSection::Cost => $query->whereHas('produk', fn (Builder $product) => $product
                         ->whereLike('nama', $term)->orWhereLike('kode', $term)),
-                    MasterSection::Product, MasterSection::Category => $query->whereLike('nama', $term)->orWhereLike('kode', $term),
+                    MasterSection::Material, MasterSection::Product, MasterSection::Category => $query->whereLike('nama', $term)->orWhereLike('kode', $term),
                     MasterSection::Supplier, MasterSection::Customer => $query->whereLike('nama', $term),
                 };
             });

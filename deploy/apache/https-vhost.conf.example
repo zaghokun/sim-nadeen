@@ -1,0 +1,25 @@
+Define NADEEN_ROOT "D:/project/sim-nadeen"
+Define NADEEN_HOST "nadeen.kantor.example"
+
+<VirtualHost *:443>
+    ServerName ${NADEEN_HOST}
+    DocumentRoot "${NADEEN_ROOT}/public"
+
+    SSLEngine on
+    SSLCertificateFile "C:/sertifikat/nadeen-fullchain.pem"
+    SSLCertificateKeyFile "C:/sertifikat/nadeen-key.pem"
+
+    ProxyRequests Off
+    ProxyFCGIBackendType GENERIC
+    <Directory "${NADEEN_ROOT}/public">
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+        DirectoryIndex index.php
+        Require all granted
+
+        <Files "index.php">
+            SetHandler "proxy:fcgi://127.0.0.1:9007/"
+            ProxyFCGISetEnvIf "true" SCRIPT_FILENAME "${NADEEN_ROOT}/public/index.php"
+        </Files>
+    </Directory>
+</VirtualHost>

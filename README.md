@@ -4,9 +4,11 @@ Aplikasi web internal untuk pesanan furniture, estimasi HPP, pembayaran, buku ka
 
 [Rancangan implementasi](docs/RANCANGAN-IMPLEMENTASI.md) · [Laporan perancangan sumber](docs/Laporan%20Tahap%20Perancangan%20-%20UMKM%20Furniture%20Nadeen.docx)
 
+[Checklist uji manual T01–T09](docs/UJI-MANUAL.md) · [Panduan impor, backup, dan pilot](docs/OPERASIONAL-DAN-PILOT.md)
+
 ## Menjalankan proyek
 
-Siapkan **PHP 8.4**, **Composer 2**, **Node.js 24** dengan **npm 11**, dan **MySQL Community Server 8.4**. Di Windows, gunakan PowerShell dari folder proyek. Jika memakai Laragon, pastikan terminal memilih versi PHP dan MySQL tersebut. Aktifkan `pdo_mysql` dan `bcmath` pada PHP CLI. `composer check-platform-reqs` memeriksa semua ekstensi yang dibutuhkan.
+Siapkan **PHP 8.4**, **Composer 2**, **Node.js 24** dengan **npm 11**, dan **MySQL Community Server 8.4**. Di Windows, gunakan PowerShell dari folder proyek. Jika memakai Laragon, pastikan terminal memilih versi PHP dan MySQL tersebut. Aktifkan `pdo_mysql`, `bcmath`, `gd`, dan `zip` pada PHP CLI. Jika ZIP belum aktif, lihat lokasi konfigurasi dengan `php --ini`, aktifkan `extension=zip` di `php.ini`, lalu buka terminal baru. `composer check-platform-reqs` memeriksa ekstensi yang dibutuhkan.
 
 ### Siapkan MySQL lokal
 
@@ -40,7 +42,9 @@ Buka [halaman aplikasi lokal](http://127.0.0.1:8000) dan masuk dengan akun admin
 
 Untuk workspace yang sudah menjalankan T01, mulai dari `php artisan migrate --seed`. Seeder mengisi delapan kategori kas awal dan mempertahankan perubahan pada kategori yang sudah ada.
 
-Admin bisa mencari, menambah, mengubah, dan menonaktifkan pelanggan, supplier, produk, standar HPP, serta kategori kas. Produksi dan gudang bisa membaca produk dan supplier aktif dengan kolom operasional. Standar HPP dibedakan berdasarkan produk dan tanggal mulai berlaku.
+Admin mengelola master, mengonfirmasi pesanan, menyetujui valuasi dan HPP aktual, mencatat pembayaran, serta membuka buku kas dan laporan. Staf Produksi & Gudang memakai menu **Pesanan**, **Inventori**, **Pembelian**, serta daftar produk dan supplier aktif. Pembuatan bahan baku tersedia di **Inventori → Bahan baku → Tambah bahan** bagi Admin.
+
+Jika workspace sudah memakai T02, jalankan `composer install`, `php artisan migrate --seed`, dan `npm.cmd run build` setelah memperbarui kode. Syarat bayar sebelum kirim memakai `NADEEN_SHIPPING_PAYMENT=bebas` pada pengembangan. Nilai `dp` atau `lunas` dapat dipilih sesuai kebijakan pemilik.
 
 Untuk memeriksa status proses Laravel dalam format JSON, jalankan `curl.exe -H "Accept: application/json" http://127.0.0.1:8000/up`.
 
@@ -58,7 +62,7 @@ php vendor/bin/pint --test
 php artisan test
 ```
 
-Suite memeriksa halaman masuk, aset build, koneksi MySQL, login kedua peran, pembatasan akses, manajemen akun, dan validasi master. Migrasi dan transaksi pengujian memakai database `sim_nadeen_test`.
+Suite memeriksa fondasi, akun, hak akses, master, saldo dan nilai lot, transaksi pesanan, laporan, serta impor Excel. Migrasi dan transaksi pengujian memakai database `sim_nadeen_test`. Untuk pengujian dari browser, ikuti [checklist manual](docs/UJI-MANUAL.md) dan gunakan database pengembangan terpisah.
 
 ### Berbagi dan berkontribusi
 
@@ -68,7 +72,7 @@ Gunakan branch per pekerjaan. Sebelum mengajukan perubahan, jalankan pemeriksaan
 
 ## Status proyek
 
-Tahap **T00 Rancangan** sampai **T02 Akun, master, dan layout** selesai. Tahap berikutnya adalah **T03 Inventori dan lot awal**.
+Implementasi **T00 sampai T08** sudah tersedia. Pada T09, hasil uji teknis dan persetujuan pilot dicatat secara terpisah.
 
 ## Pelacak tahapan
 
@@ -79,13 +83,13 @@ Ubah status menjadi **Selesai** setelah syarat di rancangan terpenuhi. Isi tangg
 | Selesai | T00 Rancangan | Rancangan teknis, pemetaan laporan, arah Anti Slop, dan pelacak tersedia | [Rancangan](docs/RANCANGAN-IMPLEMENTASI.md) · 22 November 2026 |
 | Selesai | T01 Fondasi lokal | Laravel berjalan, build aset dan migrasi MySQL lokal berhasil | [Bukti verifikasi](#catatan-verifikasi) · 22 November 2026 |
 | Selesai | T02 Akun, master, dan layout | Login dua peran, pengelolaan akun dan master, kategori kas awal, serta layout responsif teruji | [Bukti verifikasi](#catatan-verifikasi) · 23 November 2026 |
-| Direncanakan | T03 Inventori dan lot awal | Lot, saldo, kondisi, riwayat mutasi, dan peringatan stok teruji | |
-| Direncanakan | T04 Pesanan dan estimasi | Draf, HPP, konfirmasi, potong stok, dan nota teruji | |
-| Direncanakan | T05 Pembelian, bayar, dan buku kas | Pembelian, DP, pelunasan, posting, pembalik, dan saldo teruji | |
-| Direncanakan | T06 Produksi dan pengiriman | Alur produksi dan kirim, pemakaian bahan, HPP aktual, dan histori status teruji | |
-| Direncanakan | T07 Laporan dan dashboard | Arus kas, laba rugi, laba per pesanan, inventori, dan konsentrasi cocok dengan data uji | |
-| Direncanakan | T08 Migrasi dan backup | Impor percobaan, rekonsiliasi, retry, serta backup dan restore teruji | |
-| Direncanakan | T09 Uji penerimaan dan pilot | Uji sistem, aksesibilitas, responsivitas, dan pilot tercatat | |
+| Selesai | T03 Inventori dan lot awal | Lot, valuasi, kondisi, riwayat mutasi, dan peringatan stok teruji | [Checklist T03](docs/UJI-MANUAL.md#t03-inventori-dan-lot-awal) |
+| Selesai | T04 Pesanan dan estimasi | Draf, HPP, konfirmasi, potong stok FIFO, dan nota teruji | [Checklist T04](docs/UJI-MANUAL.md#t04-pesanan-dan-estimasi) |
+| Selesai | T05 Pembelian, bayar, dan buku kas | Pembelian, DP, pelunasan, posting, pembalik, dan saldo teruji | [Checklist T05](docs/UJI-MANUAL.md#t05-pembelian-pembayaran-dan-buku-kas) |
+| Selesai | T06 Produksi dan pengiriman | Progres, pemakaian bahan, pengesahan HPP aktual, dan pengiriman teruji | [Checklist T06](docs/UJI-MANUAL.md#t06-produksi-dan-pengiriman) |
+| Selesai | T07 Laporan dan dashboard | Arus kas, laba rugi, laba per pesanan, inventori, dan konsentrasi tersedia | [Checklist T07](docs/UJI-MANUAL.md#t07-laporan-dan-dasbor) |
+| Selesai dengan data uji | T08 Migrasi dan backup | Dry-run, apply, impor ulang, batch ditahan, serta backup dan restore terverifikasi | [Panduan impor dan backup](docs/OPERASIONAL-DAN-PILOT.md) |
+| Menunggu pilot usaha | T09 Uji penerimaan dan pilot | Checklist, uji teknis lokal, dan konfigurasi pilot tersedia. Data riil serta persetujuan pemilik masih diperlukan | [Checklist T09](docs/UJI-MANUAL.md#t09-uji-penerimaan-tampilan-dan-pilot) |
 
 ## Pelacak package dan alat
 
@@ -105,8 +109,9 @@ Ubah status menjadi **Terverifikasi** setelah versi terpasang dan fungsi terkait
 | `laravel/pint` | T01 | Terverifikasi | 1.32.3 | `php vendor/bin/pint --test` |
 | `phpunit/phpunit` | T01 | Terverifikasi | 12.5.45 | `php artisan test` |
 | `nunomaduro/collision` | T01 | Terverifikasi | 8.9.6 | Integrasi dan keluaran pengujian Artisan |
-| `phpoffice/phpspreadsheet` | T08 | Direncanakan | | Impor `dry-run` atas fixture Excel |
-| Apache HTTP Server 2.4 | T09 | Direncanakan | | `httpd -t`, akses HTTPS, dan login dari host pilot |
+| `phpoffice/phpspreadsheet` | T08 | Terverifikasi | 5.12.0 | Dry-run, penerapan, impor ulang, dan validasi Excel |
+| `ext-zip` | T08 | Terverifikasi | 1.22.6 | `composer check-platform-reqs` dan pembacaan workbook lokal |
+| Apache HTTP Server | T09 | Terverifikasi di localhost | 2.4.66 | `httpd -t`, HTTPS, FastCGI, halaman masuk, dan aset Vite lulus |
 
 ## Keputusan yang perlu dicatat sebelum pilot
 
@@ -125,6 +130,18 @@ Ubah status menjadi **Terverifikasi** setelah versi terpasang dan fungsi terkait
 | 22 November 2026 | T01 | MySQL lokal dan HTTP | Migrasi awal pada `sim_nadeen` dan `sim_nadeen_test` berhasil di instans MySQL terisolasi. Kedua rute HTTP merespons 200. PHPUnit lulus 2 tes dan 14 asersi |
 | 23 November 2026 | T02 | Build, migrasi, dan uji akses serta master | Build dan Pint lulus. PHPUnit lulus 9 tes dan 121 asersi pada MySQL terisolasi. Migrasi diterapkan ke kedua database lokal dan delapan kategori awal diisi pada database pengembangan |
 | 23 November 2026 | T02 | Uji antarmuka Chrome | Login kedua peran, logout, respons 403, keyboard, input master, perubahan status, filter, dan paginasi diuji. Halaman masuk dan daftar produk diperiksa pada lebar 320, 375, 768, 1024, dan 1440 px |
+| 23 November 2026 | T03–T08 | Migrasi, otomatisasi, dan build | Migrasi diterapkan pada `sim_nadeen` dan `sim_nadeen_test`. PHPUnit lulus 16 tes dan 275 asersi pada MySQL terisolasi. Pint, validasi Composer, syarat platform, dan build Vite lulus |
+| 23 November 2026 | T03–T07 | Alur operasional Chrome | Editor pesanan, FIFO, pembayaran, pembelian, buku kas, laporan, akses 403, pengiriman, dan nota PDF lulus dengan data sintetis |
+| 23 November 2026 | T04 | Konfirmasi stok serentak | Dua proses memperebutkan satu unit stok pada MySQL terisolasi. Satu pesanan terkonfirmasi, satu tetap draf, dan hanya satu mutasi keluar tercatat |
+| 23 November 2026 | T08 | Impor dan pemulihan | Dry-run, apply, impor ulang, dan penolakan batch lulus. Dump dipulihkan ke skema terpisah dengan jumlah pesanan, jurnal, saldo kas, serta sisa lot yang sama |
+| 23 November 2026 | T09 | Uji teknis HTTPS localhost | Apache 2.4.66 dan PHP FastCGI lulus uji sintaks, sertifikat lokal, `/up`, rewrite, halaman masuk, dan aset Vite. Peringatan OpenSSL pada paket Laragon didokumentasikan dalam [panduan pilot](docs/OPERASIONAL-DAN-PILOT.md#pilot-windows-melalui-apache-https) |
+
+### Pemeriksaan Anti Slop T03–T09
+
+- **Hard Gate.** Halaman masuk, lot, editor dan detail pesanan, kas, serta laporan diperiksa di Chrome pada lebar 320, 375, 768, 1024, dan 1440 px.
+- **Purpose Gate.** Judul dokumen, status, nominal, dan tindakan utama terlihat bersama. Mutasi, sumber transaksi, dan persetujuan tampil di bagian yang dipakai untuk memeriksanya.
+- **Liveliness.** Menu kerja mengikuti peran. Daftar memakai garis tabel buku kerja dan menumpuk label serta nilai pada layar sempit. Nota memiliki tata letak cetak tersendiri.
+- **Craftsmanship.** Alur browser memakai data MySQL, dari editor pesanan sampai laporan dan PDF. Angka pembanding dan pemeriksaan perangkat staf tersedia di [checklist](docs/UJI-MANUAL.md).
 
 ### Pemeriksaan Anti Slop T02
 
